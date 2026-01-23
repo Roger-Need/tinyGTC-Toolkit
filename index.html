@@ -1,5 +1,5 @@
 <!--
-tinyGTC Toolkit version 1.0
+tinyGTC Toolkit version 1.1
 Copyright (c) 2025 Roger Need
 
 This program is free software: you can redistribute it and/or modify
@@ -22,7 +22,7 @@ Refer to the GNU General Public License for licensing details.
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>tinyGTC Toolkit V1.0</title>
+  <title>tinyGTC Toolkit V1.1</title>
   <style>
     body {
       font-family: 'Segoe UI', Arial, sans-serif;
@@ -177,6 +177,41 @@ Refer to the GNU General Public License for licensing details.
       width: 100%;
     }
 
+    #skyCanvas {
+      background: #fff;
+      border-radius: 50%;
+      border: none;
+      margin: 20px auto;
+      display: block;
+      width: 300px;
+      height: 300px;
+    }
+
+    .filter-btn {
+      padding: 1px 8px;
+      margin: 0 3px;
+      font-size: 13px;
+      line-height: 1.1;
+      height: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #aaa;
+      border-radius: 3px;
+      background: #f8f9fa;
+      cursor: pointer;
+      min-width: 60px;
+      box-sizing: border-box;
+    }
+    .filter-btn.active {
+      background: #007bff;
+      color: white;
+      border-color: #007bff;
+    }
+    .filter-btn:hover {
+      background: #e0e0e0;
+    }
+
     .progress-wrap {
       display: none;
       width: 100%;
@@ -244,7 +279,7 @@ Refer to the GNU General Public License for licensing details.
       Use Chrome, Chromium, or Edge instead.
     </div>
 
-    <h1>tinyGTC Toolkit V1.0</h1>
+    <h1>tinyGTC Toolkit V1.1</h1>
 
     <!-- Connect / Disconnect button -->
     <div class="row">
@@ -277,12 +312,12 @@ Refer to the GNU General Public License for licensing details.
       </div>
     </div>
 
-    <!-- Container for real-time SNR chart and fix statistics (shown only when NMEA decode is active) -->
+    <!-- Container for real-time SNR chart, sky plot and fix statistics -->
     <div id="snrContainer">
       <div id="fixStatus">
-        Fix: <span id="statFix" style="color:#dc3545">No</span> &nbsp &nbsp &nbsp
-        Sats in View: <span id="statView">0</span> &nbsp &nbsp &nbsp
-        Used: <span id="statUse">0</span> &nbsp &nbsp &nbsp
+        Fix: <span id="statFix" style="color:#dc3545">No</span>    
+        Sats in View: <span id="statView">0</span>    
+        Used: <span id="statUse">0</span>    
         HDOP: <span id="statHDOP">0.0</span>
       </div>
       <div class="snr-header">
@@ -296,6 +331,13 @@ Refer to the GNU General Public License for licensing details.
       </div>
       <div style="padding: 15px;">
         <canvas id="snrCanvas" width="600" height="180"></canvas>
+        <canvas id="skyCanvas" width="300" height="300"></canvas>
+        <div style="margin-top: 10px; text-align: center;">
+          <button id="filterAll"   class="filter-btn active">ALL</button>
+          <button id="filterSNR"   class="filter-btn">SNR >0</button>
+          <button id="filterSNR25" class="filter-btn">SNR >25</button>
+          <button id="filterNoSNR" class="filter-btn">No SNR</button>
+        </div>
       </div>
     </div>
 
@@ -345,10 +387,11 @@ Refer to the GNU General Public License for licensing details.
     let isMonitoring = false;           // Whether continuous monitoring is active
     let isNMEADecoding = false;         // Whether to parse & display NMEA sentences
     let monitorReader = null;           // ReadableStream reader used during monitoring
-    let satData = {};                   // Satellite SNR data { "GP01": {snr, talker, lastSeen}, ... }
+    let satData = {};                   // Satellite data { "GP01": {snr, el, az, talker, lastSeen} }
     let activeSats = new Set();         // Set of satellite IDs currently used in fix (from GSA)
     let isRecordingToFile = false;      // Whether terminal output is being saved to local file
     let fileWritableStream = null;      // FileSystemWritableFileStream for recording
+    let skyFilter = 'all';              // 'all', 'snr', 'snr25', 'nosnr'
 
     // Appends a line of text to the terminal display and optionally records it
     function appendToTerminal(text) {
@@ -356,7 +399,7 @@ Refer to the GNU General Public License for licensing details.
 
       const fileList = document.getElementById('fileList');
       const div = document.createElement('div');
-      div.textContent = text;           // text already contains \r\n from caller
+      div.textContent = text;
       div.style.whiteSpace = 'pre-wrap';
       fileList.appendChild(div);
       fileList.scrollTop = fileList.scrollHeight;
@@ -503,19 +546,35 @@ Refer to the GNU General Public License for licensing details.
           let snrList = [];
           for (let i = 4; i < parts.length - 3; i += 4) {
             const satID = parts[i];
+            const elRaw = parts[i+1];
+            const azRaw = parts[i+2];
             const snrRaw = parts[i+3] ? parts[i+3].split('*')[0] : "";
+
             if (satID) {
-              snrList.push(`Sat${satID}:${snrRaw || '?' }dB`);
-              const key = talker + satID.padStart(2, '0');
-              satData[key] = {
-                snr: parseInt(snrRaw) || 0,
-                talker: talker,
-                lastSeen: Date.now()
-              };
-            }
+            snrList.push(`Sat${satID}:${snrRaw || '?' }dB`);
+            const key = talker + satID.padStart(2, '0');
+  
+          // Use a helper to check if the field actually has data
+            const parseCoord = (val) => (val !== "" && !isNaN(val)) ? parseInt(val) : undefined;
+
+  satData[key] = {
+    snr: parseInt(snrRaw) || 0,
+    el:  parseCoord(elRaw), // Stores undefined if empty
+    az:  parseCoord(azRaw), // Stores undefined if empty
+    talker: talker,
+    lastSeen: Date.now()
+  };
+}
           }
           drawSNR();
-          return `[GSV] ${talker} View: ${parts[3]} sats | Signals: ${snrList.join(', ')}`;
+          drawSkyPlot();
+          return `[GSV] ${talker} View: ${parts[3]} sats | ` +
+                 snrList.map((s, i) => {
+                   const idx = 4 + i*4;
+                   const el = parts[idx+1] || '?';
+                   const az = parts[idx+2] || '?';
+                   return `${s} (el:${el}° az:${az}°)`;
+                 }).join(', ');
         }
 
         if (type === 'ZDA') {
@@ -587,6 +646,91 @@ Refer to the GNU General Public License for licensing details.
         ctx.textAlign = 'center';
         ctx.fillText(key.replace(/[A-Z]/g, ''), x + barWidth/2, canvas.height - 8);
       });
+    }
+
+    // Draw the polar sky plot showing satellite positions
+    function drawSkyPlot() {
+      const canvas = document.getElementById('skyCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      const radius = (canvas.width / 2) - 20;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw background circles (elevation rings)
+      ctx.strokeStyle = '#ccc';
+      ctx.lineWidth = 1;
+      [1, 0.66, 0.33].forEach(m => {
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius * m, 0, 2 * Math.PI);
+        ctx.stroke();
+      });
+
+      // Draw crosshairs
+      ctx.beginPath();
+      ctx.moveTo(centerX - radius, centerY); ctx.lineTo(centerX + radius, centerY);
+      ctx.moveTo(centerX, centerY - radius); ctx.lineTo(centerX, centerY + radius);
+      ctx.stroke();
+      ctx.fillStyle = '#666';
+      ctx.font = 'bold 14px Arial';
+      ctx.textAlign = 'center';
+      // Position "N" slightly above the top of the outer circle
+      ctx.fillText('N', centerX, centerY - radius - 10);
+
+
+      // Draw satellites
+      for (const key in satData) {
+        const sat = satData[key];
+        if (sat.el !== undefined && (Date.now() - sat.lastSeen < 12000)) {
+          // Apply filter
+          if (skyFilter === 'snr'   && sat.snr <= 0)    continue;
+          if (skyFilter === 'snr25' && sat.snr <= 25)   continue;
+          if (skyFilter === 'nosnr' && sat.snr > 0)     continue;
+
+          const r = ((90 - sat.el) / 90) * radius;
+          const angle = (sat.az - 90) * (Math.PI / 180);
+          const x = centerX + r * Math.cos(angle);
+          const y = centerY + r * Math.sin(angle);
+
+          ctx.fillStyle = (sat.talker === 'GP') ? '#28a745' :
+                          (sat.talker === 'BD') ? '#007bff' : '#FFD700';
+          
+          ctx.beginPath();
+          ctx.arc(x, y, 4.5, 0, 2 * Math.PI);
+          ctx.fill();
+
+          ctx.fillStyle = '#000';
+          ctx.font = '10px Arial';
+          ctx.textAlign = 'center';
+          ctx.fillText(key.replace(/[A-Z]/g, ''), x, y - 8);
+        }
+      }
+
+      // Label elevation rings
+      ctx.fillStyle = '#888';
+      ctx.font = '11px Arial';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+
+      const labelOffset = 4;
+      ctx.fillText('0°',   centerX + radius       + labelOffset, centerY);
+      ctx.fillText('30°',  centerX + radius * 0.66 + labelOffset, centerY);
+      ctx.fillText('60°',  centerX + radius * 0.33 + labelOffset, centerY);
+      ctx.fillText('90°',  centerX                + labelOffset, centerY);
+    }
+
+    // Set sky plot filter mode and redraw
+    function setSkyFilter(mode) {
+      skyFilter = mode;
+      // Update button active states
+      document.getElementById('filterAll').classList.toggle('active', mode === 'all');
+      document.getElementById('filterSNR').classList.toggle('active', mode === 'snr');
+      document.getElementById('filterSNR25').classList.toggle('active', mode === 'snr25');
+      document.getElementById('filterNoSNR').classList.toggle('active', mode === 'nosnr');
+      // Redraw with new filter
+      drawSkyPlot();
     }
 
     // Toggle continuous monitoring of serial data
@@ -1011,6 +1155,14 @@ Refer to the GNU General Public License for licensing details.
     function clearTerminal() {
       document.getElementById('fileList').innerHTML = "";
     }
+
+    // Set up sky plot filter buttons (run once after DOM is ready)
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('filterAll').onclick   = () => setSkyFilter('all');
+      document.getElementById('filterSNR').onclick   = () => setSkyFilter('snr');
+      document.getElementById('filterSNR25').onclick = () => setSkyFilter('snr25');
+      document.getElementById('filterNoSNR').onclick = () => setSkyFilter('nosnr');
+    });
   </script>
 </body>
 </html>

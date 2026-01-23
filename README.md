@@ -1,4 +1,4 @@
-tinyGTC Toolkit V1.0 by Roger Need
+tinyGTC Toolkit V1.1 by Roger Need
 =====================
 
 A browser-based serial toolkit for the tinyGTC GNSS-disciplined counter/timer. It runs entirely in a modern Chromium-based browser and talks to the tinyGTC over USB serial using the Web Serial and File System Access APIs.
@@ -27,7 +27,7 @@ A browser-based serial toolkit for the tinyGTC GNSS-disciplined counter/timer. I
         - Parses common NMEA sentences: RMC, GGA, GSA, VTG, GSV, ZDA, TXT.
         - Produces human-readable summaries (fix status, lat/lon, speed, alt, mode, date/time).
         - Tracks satellites, HDOP, and fix quality.
-- **GNSS SNR and status display**
+- **GNSS SNR, Sky Plot and status display**
     - Dedicated SNR panel with:
         - Fix status (YES/No).
         - Satellites “in view” vs “used”.
@@ -37,6 +37,9 @@ A browser-based serial toolkit for the tinyGTC GNSS-disciplined counter/timer. I
         - Color-coded bars and labels.
         - Only recently seen satellites are rendered (aging out after a timeout).
         - Highlights satellites actively used in the solution.
+	- SkyPlot view
+		- Shows satellite azimuth and elevation on polar chart
+		- Filter buttons to show all sats, SNR >0, SNR>25 and NO SNR
 - **Screen capture and PNG save**
     - **“Capture Screen”**:
         - Sends a `capture` command over serial to tinyGTC.
@@ -72,8 +75,6 @@ A browser-based serial toolkit for the tinyGTC GNSS-disciplined counter/timer. I
         - Limits history to 200 lines
         - Auto-scrolls as new lines arrive.
 
-
-
 ## Browser Requirements
 
 - A Chromium-based browser with:
@@ -81,7 +82,6 @@ A browser-based serial toolkit for the tinyGTC GNSS-disciplined counter/timer. I
     - File System Access API support for save dialogs and streaming writes.
 - HTTPS context or localhost (as required by these capabilities).
 - On unsupported browsers, a warning banner is shown and functionality is disabled.
-
 
 ## Typical Workflow
 
