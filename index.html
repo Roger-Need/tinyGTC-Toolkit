@@ -1,5 +1,5 @@
 <!--
-tinyGTC Toolkit version 1.1
+tinyGTC Toolkit version 1.2
 Copyright (c) 2025 Roger Need
 
 This program is free software: you can redistribute it and/or modify
@@ -22,7 +22,7 @@ Refer to the GNU General Public License for licensing details.
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>tinyGTC Toolkit V1.1</title>
+  <title>tinyGTC Toolkit V1.2</title>
   <style>
     body {
       font-family: 'Segoe UI', Arial, sans-serif;
@@ -279,7 +279,7 @@ Refer to the GNU General Public License for licensing details.
       Use Chrome, Chromium, or Edge instead.
     </div>
 
-    <h1>tinyGTC Toolkit V1.1</h1>
+    <h1>tinyGTC Toolkit V1.2</h1>
 
     <!-- Connect / Disconnect button -->
     <div class="row">
@@ -379,8 +379,12 @@ Refer to the GNU General Public License for licensing details.
     const HEIGHT = 320;
     const TOTAL_BYTES = WIDTH * HEIGHT * 2;
 
-    // Magic byte sequence sent by device after "capture" command to mark start of image data
-    const marker = new Uint8Array([0x0d, 0x0a, 0x3e, 0x20, 0x63, 0x61, 0x70, 0x74, 0x75, 0x72, 0x65, 0x0d, 0x0a, 0xe7, 0x1c]);
+	/* ---- Helper: Marker sequence and finder ---- */
+	// PATCHED: Removed 0xe7, 0x1c (the first pixel) to make the marker data-independent
+	const marker = new Uint8Array([
+	0x0d, 0x0a, 0x3e, 0x20, 0x63, 0x61, 0x70, 0x74,
+	0x75, 0x72, 0x65, 0x0d, 0x0a
+]);
 
     // Global state variables
     let port = null;                    // Current Web Serial port object
@@ -494,36 +498,34 @@ Refer to the GNU General Public License for licensing details.
       const talker = parts[0].slice(1, 3);
 
       try {
-        if (type === 'RMC') {
-          const status = parts[2] === 'A' ? "Valid" : "Void";
-          const lat = parts[3] ? `${parts[3].slice(0,2)}°${parts[3].slice(2)}' ${parts[4]}` : "N/A";
-          const lon = parts[5] ? `${parts[5].slice(0,3)}°${parts[5].slice(3)}' ${parts[6]}` : "N/A";
-          const speed = parts[7] ? (parseFloat(parts[7]) * 1.852).toFixed(1) + " km/h" : "0 km/h";
-          const date = parts[9] ? `${parts[9].slice(0,2)}/${parts[9].slice(2,4)}/20${parts[9].slice(4)}` : "";
-          return `[RMC] ${status} | Lat: ${lat} | Lon: ${lon} | Spd: ${speed} | ${date}`;
-        }
+if (type === 'GGA') {
+  const time = parts[1] ? parts[1].slice(0,2) + ":" + parts[1].slice(2,4) + ":" + parts[1].slice(4,6) : "N/A";
+  
+  // Format Latitude: First 2 digits are degrees, the rest are minutes
+  const latRaw = parts[2];
+  const latFormatted = latRaw ? `${latRaw.slice(0,2)}°${latRaw.slice(2)}' ${parts[3]}` : "N/A";
 
-        if (type === 'GGA') {
-          const time = parts[1] ? parts[1].slice(0,2) + ":" + parts[1].slice(2,4) + ":" + parts[1].slice(4,6) : "N/A";
-          const lat = parts[2] ? parts[2] + " " + parts[3] : "N/A";
-          const lon = parts[4] ? parts[4] + " " + parts[5] : "N/A";
-          const qual = ["Invalid", "GPS Fix", "DGPS Fix", "PPS", "RTK", "Float RTK"][parts[6]] || "Unknown";
-          const sats = parts[7] || "0";
-          const hdop = parts[8] || "N/A";
-          const alt = parts[9] ? parts[9] + (parts[10] || "M") : "N/A";
+  // Format Longitude: First 3 digits are degrees, the rest are minutes
+  const lonRaw = parts[4];
+  const lonFormatted = lonRaw ? `${lonRaw.slice(0,3)}°${lonRaw.slice(3)}' ${parts[5]}` : "N/A";
 
-          // Update fix status UI
-          const f = document.getElementById('statFix');
-          if (f) {
-            const hasFix = (parts[6] === '1' || parts[6] === '2');
-            f.textContent = hasFix ? "YES" : "No";
-            f.style.color = hasFix ? "#28a745" : "#dc3545";
-            document.getElementById('statUse').textContent = sats;
-            document.getElementById('statHDOP').textContent = hdop;
-          }
+  const qual = ["Invalid", "GPS Fix", "DGPS Fix", "PPS", "RTK", "Float RTK"][parts[6]] || "Unknown";
+  const sats = parts[7] || "0";
+  const hdop = parts[8] || "N/A";
+  const alt = parts[9] ? parts[9] + (parts[10] || "M") : "N/A";
 
-          return `[GGA] ${qual} | Time: ${time} | Lat: ${lat} | Lon: ${lon} | Sats: ${sats} | Alt: ${alt}`;
-        }
+  // Update UI stats
+  const f = document.getElementById('statFix');
+  if (f) {
+    const hasFix = (parts[6] === '1' || parts[6] === '2');
+    f.textContent = hasFix ? "YES" : "No";
+    f.style.color = hasFix ? "#28a745" : "#dc3545";
+    document.getElementById('statUse').textContent = sats;
+    document.getElementById('statHDOP').textContent = hdop;
+  }
+
+  return `[GGA] ${qual} | Time: ${time} | Lat: ${latFormatted} | Lon: ${lonFormatted} | Sats: ${sats} | Alt: ${alt}`;
+}
 
         if (type === 'GSA') {
           activeSats.clear();

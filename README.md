@@ -1,4 +1,4 @@
-tinyGTC Toolkit V1.1 by Roger Need
+tinyGTC Toolkit V1.2 by Roger Need
 =====================
 
 A browser-based serial toolkit for the tinyGTC GNSS-disciplined counter/timer. It runs entirely in a modern Chromium-based browser and talks to the tinyGTC over USB serial using the Web Serial and File System Access APIs.
