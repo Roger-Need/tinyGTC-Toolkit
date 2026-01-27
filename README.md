@@ -1,4 +1,4 @@
-tinyGTC Toolkit V1.2 by Roger Need
+tinyGTC Toolkit V1.3 by Roger Need
 =====================
 
 A browser-based serial toolkit for the tinyGTC GNSS-disciplined counter/timer. It runs entirely in a modern Chromium-based browser and talks to the tinyGTC over USB serial using the Web Serial and File System Access APIs.
@@ -55,11 +55,12 @@ A browser-based serial toolkit for the tinyGTC GNSS-disciplined counter/timer. I
         - Clicking a file name copies it into the filename input.
     - **Download File**
         - Issues `sd_read <filename>`.
+		- Transfer progress messages in terminal window
         - Shows a download progress bar as raw bytes stream in.
         - Saves the file via File System Access API.
     - **Delete File**
         - Issues `sd_delete <filename>`.
-        - Shows the device response in the terminal-style area.
+        - Shows the device response in the terminal area.
 - **Manual command entry**
     - Text box to send arbitrary commands to tinyGTC.
     - Splits the response into lines, appends them to the terminal.
