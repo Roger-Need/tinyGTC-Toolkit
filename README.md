@@ -1,4 +1,4 @@
-tinyGTC Toolkit V1.3 by Roger Need
+tinyGTC Toolkit V2.0 by Roger Need
 =====================
 
 A browser-based serial toolkit for the tinyGTC GNSS-disciplined counter/timer. It runs entirely in a modern Chromium-based browser and talks to the tinyGTC over USB serial using the Web Serial and File System Access APIs.
@@ -13,6 +13,7 @@ A browser-based serial toolkit for the tinyGTC GNSS-disciplined counter/timer. I
     - Connects to any Web Serial–exposed COM port
     - Clean connect/disconnect logic with UI state reset.
     - Browser support check and warning if Web Serial is unavailable.
+	- Automatic recognition of command or GPS/USB logging modes
 - **Live terminal with optional recording**
     - Scrollable terminal window showing text data from the tinyGTC.
     - Optional **“Record to File”** mode:
@@ -27,6 +28,9 @@ A browser-based serial toolkit for the tinyGTC GNSS-disciplined counter/timer. I
         - Parses common NMEA sentences: RMC, GGA, GSA, VTG, GSV, ZDA, TXT.
         - Produces human-readable summaries (fix status, lat/lon, speed, alt, mode, date/time).
         - Tracks satellites, HDOP, and fix quality.
+	- Optional **CHA & CHB counter** mode:
+		- Calculates Average, Minimum and Maximum for 2 channels
+		- Select mode with one click,  Reset statistics with double click
 - **GNSS SNR, Sky Plot and status display**
     - Dedicated SNR panel with:
         - Fix status (YES/No).

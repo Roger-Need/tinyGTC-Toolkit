@@ -1,5 +1,5 @@
 <!--
-tinyGTC Toolkit version 1.3
+tinyGTC Toolkit version 2.0
 Copyright (c) 2025 Roger Need
 
 This program is free software: you can redistribute it and/or modify
@@ -22,14 +22,20 @@ Refer to the GNU General Public License for licensing details.
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>tinyGTC Toolkit V1.3</title>
+  <title>tinyGTC Toolkit V2.0</title>
+
   <style>
+    /* ──────────────────────────────────────────────────────────────
+       GLOBAL STYLES – colors, fonts, layout for the whole page
+    ────────────────────────────────────────────────────────────── */
     body {
       font-family: 'Segoe UI', Arial, sans-serif;
       text-align: center;
       padding: 0 20px 20px 20px;
       background: #f0f2f5;
     }
+
+    /* Main content container – centered box with shadow */
     .box {
       max-width: 900px;
       margin: auto;
@@ -39,15 +45,19 @@ Refer to the GNU General Public License for licensing details.
       background: white;
       box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
+
     h1 {
       margin-top: 0;
       margin-bottom: 10px;
     }
+
+    /* Basic button and input styling */
     button, input {
       height: 40px;
       box-sizing: border-box;
       vertical-align: middle;
     }
+
     button {
       font-size: 15px;
       margin: 5px;
@@ -58,35 +68,20 @@ Refer to the GNU General Public License for licensing details.
       transition: 0.2s;
       min-width: 137px;
     }
+
     button:disabled {
-      opacity: 0.5;
+      opacity: 0.3;
       cursor: not-allowed;
     }
-    .conn-btn {
-      border: 1px solid #ccc;
-      background: #e9ecef;
-      color: #555;
-    }
-    .action-btn {
-      border: 1px solid #007bff;
-      background: white;
-      color: #007bff;
-    }
-    .action-btn:hover:not(:disabled) {
-      background: #007bff;
-      color: white;
-    }
-    .monitor-on {
-      background: #007bff !important;
-      color: white !important;
-      border-color: #007bff !important;
-    }
+
     input {
       padding: 0 10px;
       border: 1px solid #ddd;
       border-radius: 5px;
       outline: none;
     }
+
+    /* Horizontal row of elements – centers and wraps on small screens */
     .row {
       display: flex;
       justify-content: center;
@@ -95,6 +90,8 @@ Refer to the GNU General Public License for licensing details.
       margin-bottom: 5px;
       flex-wrap: wrap;
     }
+
+    /* Two-button or input+button rows that space items evenly */
     .align-container {
       max-width: 630px;
       margin: 0 auto;
@@ -103,14 +100,18 @@ Refer to the GNU General Public License for licensing details.
       align-items: center;
       gap: 10px;
     }
+
     .align-container button {
       flex-shrink: 0;
       margin: 0;
     }
+
     #cmdInput {
       flex: 1 1 50px;
       min-width: 50px;
     }
+
+    /* Container for SNR chart and sky plot – hidden until needed */
     #snrContainer {
       max-width: 630px;
       margin: 20px auto;
@@ -120,6 +121,7 @@ Refer to the GNU General Public License for licensing details.
       display: none;
       overflow: hidden;
     }
+
     #fixStatus {
       background: #e9ecef;
       color: #495057;
@@ -129,6 +131,7 @@ Refer to the GNU General Public License for licensing details.
       border-bottom: 1px solid #dee2e6;
       text-align: center;
     }
+
     .snr-header {
       display: flex;
       justify-content: space-between;
@@ -138,21 +141,25 @@ Refer to the GNU General Public License for licensing details.
       font-weight: bold;
       color: #666;
     }
+
     .legend {
       display: flex;
       gap: 10px;
     }
+
     .legend-item {
       display: flex;
       align-items: center;
       gap: 4px;
     }
+
     .dot {
       width: 8px;
       height: 8px;
       border-radius: 50%;
       display: inline-block;
     }
+
     canvas {
       margin: 10px auto;
       border: 3px solid #333;
@@ -163,6 +170,7 @@ Refer to the GNU General Public License for licensing details.
       height: 320px;
       max-width: 100%;
     }
+
     #snrCanvas {
       background: #fff;
       border: none;
@@ -171,6 +179,7 @@ Refer to the GNU General Public License for licensing details.
       height: 180px;
       width: 100%;
     }
+
     #skyCanvas {
       background: #fff;
       border-radius: 50%;
@@ -180,6 +189,112 @@ Refer to the GNU General Public License for licensing details.
       width: 300px;
       height: 300px;
     }
+
+    .progress-wrap {
+      display: none;
+      width: 100%;
+      max-width: 600px;
+      margin: 2px auto 12px auto;
+    }
+
+    .progress-bg {
+      width: 100%;
+      background: #e0e0e0;
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid #ccc;
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      transition: width 0.1s;
+    }
+
+    .capture-fill {
+      background: #007bff;
+    }
+
+    .download-fill {
+      background: #28a745;
+    }
+
+    #fileList {
+      text-align: left;
+      background: #1e1e1e;
+      color: #00ff00;
+      padding: 15px;
+      font-family: 'Consolas', monospace;
+      height: 150px;
+      overflow-y: auto;
+      margin: 20px auto 10px auto;
+      border-radius: 5px;
+      border: 1px solid #333;
+      max-width: 600px;
+      font-size: 15px;
+      white-space: pre-wrap;
+    }
+
+    .file-item {
+      cursor: pointer;
+      padding: 4px 8px;
+      display: block;
+      border-bottom: 1px solid #2a2a2a;
+    }
+
+    .file-item:hover {
+      background: #333;
+      color: #fff;
+    }
+
+    .freq-display {
+      width: 220px;
+      height: 40px;
+      line-height: 40px;
+      background: #000;
+      color: #00ff00;
+      font-family: 'Consolas', monospace;
+      font-size: 19px;
+      font-weight: normal;
+      text-align: right;
+      border: 1px solid #333;
+      border-radius: 6px;
+      overflow: hidden;
+      white-space: nowrap;
+      box-sizing: border-box;
+      padding: 0 12px;
+    }
+
+    .freq-display.inactive {
+      color: #888;
+    }
+
+    /* ──────────────────────────────────────────────────────────────
+       BUTTON STYLES – base appearance for different button types
+    ────────────────────────────────────────────────────────────── */
+    .conn-btn {
+      border: 1px solid #ccc;
+      background: #e9ecef;
+      color: #555;
+    }
+
+    .action-btn, .freq-btn, .stat-btn {
+      border: 1px solid #007bff;
+      background: white;
+      color: #007bff;
+    }
+
+    .freq-btn, .stat-btn {
+      min-width: 80px;
+      padding: 0 12px;
+    }
+
+    #nmeaBtn, #chabBtn {
+      min-width: 60px;
+      padding: 0 8px;
+    }
+
     .filter-btn {
       padding: 1px 8px;
       margin: 0 3px;
@@ -196,81 +311,41 @@ Refer to the GNU General Public License for licensing details.
       min-width: 60px;
       box-sizing: border-box;
     }
+
+    /* ──────────────────────────────────────────────────────────────
+       INTERACTIVE BUTTON STATES – hover and active appearance
+       (placed last so they override earlier rules)
+    ────────────────────────────────────────────────────────────── */
+    .action-btn:hover:not(:disabled):not(.monitor-on),
+    .freq-btn:hover:not(:disabled):not(.monitor-on),
+    .stat-btn:hover:not(:disabled):not(.monitor-on),
+    .filter-btn:hover:not(.active) {
+      background: #66b3ff !important;
+      color: white !important;
+      border-color: #66b3ff !important;
+    }
+
+    .monitor-on,
     .filter-btn.active {
-      background: #007bff;
-      color: white;
-      border-color: #007bff;
-    }
-    .filter-btn:hover {
-      background: #e0e0e0;
-    }
-    .progress-wrap {
-      display: none;
-      width: 100%;
-      max-width: 600px;
-      margin: 2px auto 12px auto;
-    }
-    .progress-bg {
-      width: 100%;
-      background: #e0e0e0;
-      height: 8px;
-      border-radius: 4px;
-      overflow: hidden;
-      border: 1px solid #ccc;
-    }
-    .progress-fill {
-      width: 0%;
-      height: 100%;
-      transition: width 0.1s;
-    }
-    .capture-fill {
-      background: #007bff;
-    }
-    .download-fill {
-      background: #28a745;
-    }
-    #fileList {
-      text-align: left;
-      background: #1e1e1e;
-      color: #00ff00;
-      padding: 15px;
-      font-family: 'Consolas', monospace;
-      height: 150px;
-      overflow-y: auto;
-      margin: 20px auto 10px auto;
-      border-radius: 5px;
-      border: 1px solid #333;
-      max-width: 600px;
-      font-size: 14px;
-      white-space: pre-wrap;
-    }
-    .file-item {
-      cursor: pointer;
-      padding: 4px 8px;
-      display: block;
-      border-bottom: 1px solid #2a2a2a;
-    }
-    .file-item:hover {
-      background: #333;
-      color: #fff;
-    }
-    .fileList div {
-      white-space: pre-wrap !important;
-      line-height: 1.2;
+      background: #2e8fff !important;
+      color: white !important;
+      border-color: #2e8fff !important;
     }
   </style>
 </head>
+
 <body>
 
+  <!-- Main container for the entire interface -->
   <div class="box">
 
-    <!-- Warning shown if browser doesn't support Web Serial API -->
+    <!-- Warning shown if browser does not support Web Serial API -->
     <div id="browserWarning" style="display: none; background: #fff5f5; color: #dc3545; border: 1px solid #dc3545; padding: 15px; margin: 0 auto 20px auto; border-radius: 8px; font-weight: bold; max-width: 600px;">
       This browser does not support the Web Serial API.<br>
       Use Chrome, Chromium, or Edge instead.
     </div>
 
-    <h1>tinyGTC Toolkit V1.3</h1>
+    <h1>tinyGTC Toolkit V2.0</h1>
 
     <!-- Connect / Disconnect button -->
     <div class="row">
@@ -290,20 +365,43 @@ Refer to the GNU General Public License for licensing details.
       <div class="progress-bg"><div id="captureBar" class="progress-fill capture-fill"></div></div>
     </div>
 
-    <!-- Canvas where captured screen image is displayed -->
+    <!-- Canvas where captured device screen is drawn -->
     <canvas id="canvas" width="480" height="320"></canvas>
 
-    <!-- Command input + monitor + NMEA decode controls -->
+    <!-- Command input and monitor controls -->
     <div style="margin-top: 25px; padding-top: 20px; border-top: 2px solid #eee;">
       <div class="align-container">
         <input type="text" id="cmdInput" placeholder="Enter command..." onkeyup="if(event.key==='Enter') sendCommand()">
         <button onclick="sendCommand()" class="action-btn lockout">Send Command</button>
-        <button onclick="toggleMonitor()" class="action-btn" id="monitorBtn">Monitor</button>
-        <button onclick="toggleNMEADecode()" class="action-btn monitor-required" id="nmeaBtn" disabled>NMEA Decode</button>
+        <button onclick="toggleMonitor()" class="action-btn lockout" id="monitorBtn">Monitor</button>
+        <button onclick="toggleNMEADecode()" class="action-btn monitor-required" id="nmeaBtn" disabled>NMEA</button>
+        <button onclick="toggleFreqPanel()" class="action-btn monitor-required" id="chabBtn" disabled>CH A/B</button>
       </div>
     </div>
 
-    <!-- SNR / sky plot area – shown only when NMEA decode is active -->
+    <!-- Frequency display panel (hidden until CH A/B data appears) -->
+    <div id="freqContainer" style="display: none; margin-top: 25px; padding-top: 20px; border-top: 2px solid #eee;">
+      <div class="align-container" style="max-width: 680px; gap: 10px; justify-content: center; margin: 0 auto;">
+        <div id="freqA" class="freq-display">-------------     </div>
+        <button onclick="toggleChannel('A')" class="freq-btn" id="chaBtn" disabled>CHA</button>
+        <button onclick="toggleChannel('B')" class="freq-btn" id="chbBtn" disabled>CHB</button>
+        <div id="freqB" class="freq-display">-------------     </div>
+      </div>
+
+      <div style="margin-top: 15px;">
+        <div class="align-container" style="max-width: 680px; justify-content: center; margin: 0 auto; gap: 10px; flex-wrap: wrap;">
+          <button onclick="toggleStat('CHA-AVG')" class="action-btn stat-btn" id="chaAvgBtn" disabled>Avg</button>
+          <button onclick="toggleStat('CHA-MIN')" class="action-btn stat-btn" id="chaMinBtn" disabled>Min</button>
+          <button onclick="toggleStat('CHA-MAX')" class="action-btn stat-btn" id="chaMaxBtn" disabled>Max</button>
+          <button onclick="cycleDigits()" class="action-btn stat-btn" id="digitsBtn">Digits</button>
+          <button onclick="toggleStat('CHB-AVG')" class="action-btn stat-btn" id="chbAvgBtn" disabled>Avg</button>
+          <button onclick="toggleStat('CHB-MIN')" class="action-btn stat-btn" id="chbMinBtn" disabled>Min</button>
+          <button onclick="toggleStat('CHB-MAX')" class="action-btn stat-btn" id="chbMaxBtn" disabled>Max</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SNR bar chart + sky plot + GNSS status -->
     <div id="snrContainer">
       <div id="fixStatus">
         Fix: <span id="statFix" style="color:#dc3545">No</span>     
@@ -332,7 +430,7 @@ Refer to the GNU General Public License for licensing details.
       </div>
     </div>
 
-    <!-- SD card file management section -->
+    <!-- SD card file operations -->
     <div style="margin-top: 25px; padding-top: 20px; border-top: 2px solid #eee;">
       <div class="align-container">
         <button onclick="listSD()" class="action-btn lockout">List SD Files</button>
@@ -341,57 +439,125 @@ Refer to the GNU General Public License for licensing details.
         <button onclick="deleteSD()"  class="action-btn lockout select-required" id="deleteBtn"   style="border-color: #dc3545; color: #dc3545;">Delete File</button>
       </div>
 
-      <!-- Progress bar for file download from SD card -->
+      <!-- Progress bar for file download -->
       <div id="downloadProgressWrap" class="progress-wrap" style="margin-top: 20px;">
         <div class="progress-bg"><div id="downloadBar" class="progress-fill download-fill"></div></div>
       </div>
 
-      <!-- Terminal output area (also shows file list) -->
+      <!-- Terminal / file list area -->
       <div id="fileList">Terminal...</div>
 
+      <!-- Terminal controls -->
       <div class="row">
-        <button onclick="toggleFileRecord()" class="action-btn" id="recordBtn">Record to File</button>
-        <button onclick="saveTerminalLog()" class="action-btn">Save Log</button>
-        <button onclick="clearTerminal()" class="action-btn">Clear</button>
+        <button onclick="toggleFileRecord()" class="action-btn" id="recordBtn" disabled>Record to File</button>
+        <button onclick="saveTerminalLog()" class="action-btn" id="saveTerminalLog" disabled>Save Log</button>
+        <button onclick="toggleAutoScroll()" class="action-btn" id="autoScrollBtn">Auto-scroll</button>
+        <button onclick="clearTerminal()" class="action-btn" id="clear" disabled>Clear</button>
       </div>
     </div>
 
   </div>
 
   <script>
-    // Check if browser supports Web Serial API (needed for serial communication)
+    // ──────────────────────────────────────────────────────────────
+    // GLOBAL VARIABLES & CONSTANTS
+    // ──────────────────────────────────────────────────────────────
+
+    // Check if browser supports Web Serial API (only Chrome/Edge really do)
     if (!("serial" in navigator)) {
       document.addEventListener("DOMContentLoaded", () => {
         document.getElementById('browserWarning').style.display = 'block';
       });
     }
 
-    // ────────────────────────────────────────────────
-    //          Global constants & variables
-    // ────────────────────────────────────────────────
+    // Screen dimensions – device always sends 480×320 RGB565 image
+    const WIDTH = 480;
+    const HEIGHT = 320;
+    const TOTAL_BYTES = WIDTH * HEIGHT * 2;
 
-    const WIDTH = 480;                      // Screen capture width in pixels
-    const HEIGHT = 320;                     // Screen capture height in pixels
-    const TOTAL_BYTES = WIDTH * HEIGHT * 2; // 16-bit RGB565 = 2 bytes per pixel
-
-    // Marker bytes sent by device before image data: "capture\r\n"
+    // Marker bytes sent right before the binary image data
     const marker = new Uint8Array([0x63, 0x61, 0x70, 0x74, 0x75, 0x72, 0x65, 0x0d, 0x0a]);
 
-    let port = null;                        // Current Web Serial port object
-    let isMonitoring = false;               // Is continuous NMEA monitoring active?
-    let isNMEADecoding = false;             // Should we parse NMEA sentences?
-    let monitorReader = null;               // Reader used during monitoring
-    let satData = {};                       // Satellite info (SNR, elevation, azimuth…)
-    let activeSats = new Set();             // Satellites used in current fix
-    let isRecordingToFile = false;          // Is terminal output being saved to file?
-    let fileWritableStream = null;          // File handle for recording
-    let skyFilter = 'all';                  // Current sky plot visibility filter
-    let isScreenShown = false;              // Is captured screen currently visible?
+    // Main serial port object (null when not connected)
+    let port = null;
 
-    // ────────────────────────────────────────────────
-    //          Helper – append text to terminal
-    // ────────────────────────────────────────────────
+    // Whether we are currently in continuous "Monitor" mode
+    let isMonitoring = false;
 
+    // Whether NMEA sentence decoding & visualization is active
+    let isNMEADecoding = false;
+
+    // Reader object used during monitoring (so we can cancel it)
+    let monitorReader = null;
+
+    // Object storing satellite data (SNR, elevation, azimuth, etc.)
+    let satData = {};
+
+    // Set of currently active satellites (from GSA sentences)
+    let activeSats = new Set();
+
+    // Whether we are recording terminal output to a file
+    let isRecordingToFile = false;
+
+    // File handle / stream for recording
+    let fileWritableStream = null;
+
+    // Current sky plot filter mode ('all', 'snr', 'snr25', 'nosnr')
+    let skyFilter = 'all';
+
+    // Whether the captured screen is currently visible
+    let isScreenShown = false;
+
+    // Flags to detect which data format we are receiving in monitor mode
+    let hasSeenCHA = false;
+    let hasSeenCHB = false;
+    let hasSeenNMEA = false;
+    let hasSeenFreq = false;
+
+    // Statistics toggles for Channel A and B
+    let chaStatsActive = false;
+    let chbStatsActive = false;
+
+    // Running values for average calculation (Channel A)
+    let chaAvgCounter = 0;
+    let chaRunningSum = 0;
+
+    // Min / Max trackers (Channel A)
+    let chaMinValue = null;
+    let chaMaxValue = null;
+
+    // Same for Channel B
+    let chbAvgCounter = 0;
+    let chbRunningSum = 0;
+    let chbMinValue = null;
+    let chbMaxValue = null;
+
+    // Last received frequency values (as strings)
+    let lastChaFreq = null;
+    let lastChbFreq = null;
+
+    // Number of decimal places to show in frequency display
+    let freqDigits = 3;
+
+    // Whether we are in command mode (prompt > ) vs streaming mode
+    let isCommandMode = false;
+
+    // Whether terminal auto-scrolls to bottom when new lines arrive
+    let autoScrollEnabled = true;
+
+    // ──────────────────────────────────────────────────────────────
+    // HELPER FUNCTIONS – UI & terminal
+    // ──────────────────────────────────────────────────────────────
+
+    // Toggle auto-scroll behaviour and update button appearance
+    function toggleAutoScroll() {
+      autoScrollEnabled = !autoScrollEnabled;
+      const btn = document.getElementById('autoScrollBtn');
+      btn.classList.toggle('monitor-on', !autoScrollEnabled);
+      btn.textContent = autoScrollEnabled ? "Auto-scroll" : "Scroll paused";
+    }
+
+    // Add a line of text to the terminal window (and optionally record it)
     function appendToTerminal(text) {
       if (typeof text !== 'string' || text.length === 0) return;
 
@@ -400,125 +566,277 @@ Refer to the GNU General Public License for licensing details.
       div.textContent = text;
       div.style.whiteSpace = 'pre-wrap';
       fileList.appendChild(div);
-      fileList.scrollTop = fileList.scrollHeight;
+
+      // Scroll to bottom if auto-scroll is on
+      if (autoScrollEnabled) {
+        fileList.scrollTop = fileList.scrollHeight;
+      }
 
       // Keep only last 200 lines to avoid memory issues
       while (fileList.childNodes.length > 200) {
         fileList.removeChild(fileList.firstChild);
       }
 
-      // Also write to file if recording is active
+      // If recording is active, write to file
       if (isRecordingToFile && fileWritableStream) {
         fileWritableStream.write(text);
       }
     }
 
-    // Enable/disable buttons that shouldn't be used during monitoring
+    // Disable / enable all buttons that should only work in command mode
     function setLockout(state) {
       document.querySelectorAll('.lockout').forEach(btn => btn.disabled = state);
     }
 
-    // Update state of "Save PNG" button
+    // Enable/disable "Save PNG" depending on whether a capture is visible
     function updateCaptureUIState() {
       const canvas = document.getElementById('canvas');
       const visible = isScreenShown && canvas.style.display !== 'none';
       document.getElementById('savePngBtn').disabled = !visible;
     }
 
-   function updateNmeaButtonState() {
-    const btn = document.getElementById('nmeaBtn');
-    btn.disabled = !isMonitoring && !isNMEADecoding;
-}
+    // Enable/disable NMEA button depending on monitor state
+    function updateNmeaButtonState() {
+      const btn = document.getElementById('nmeaBtn');
+      btn.disabled = !isMonitoring && !isNMEADecoding;
+    }
 
+    // Enable/disable Download & Delete buttons when a file is selected
     function updateFileActionButtons() {
       const filename = document.getElementById('fileName').value.trim();
       const hasFile = filename.length > 0;
-    
       document.querySelectorAll('.select-required').forEach(btn => {
         btn.disabled = !hasFile;
-    });
-}
-
-    // ────────────────────────────────────────────────
-    //          Connect / Disconnect from serial device
-    // ────────────────────────────────────────────────
-
-async function handleConnectClick() {
-  if (port) {
-    const btn = document.getElementById('connectBtn');
-    btn.textContent = "Disconnecting...";
-    btn.disabled = true;
-
-    // 1. Stop monitoring first (this usually finishes quickly)
-    if (isMonitoring && monitorReader) {
-      isMonitoring = false;
-      try {
-        await monitorReader.cancel();
-        monitorReader.releaseLock();
-      } catch (e) {
-        console.warn("Error cancelling monitor reader:", e);
-      }
-      monitorReader = null;
-
-      document.getElementById('monitorBtn').textContent = 'Monitor';
-      document.getElementById('monitorBtn').classList.remove('monitor-on');
-      setLockout(false);
-      updateNmeaButtonState();
+      });
     }
 
-    // 2. Start close in background + timeout
-    const closeWithTimeout = async () => {
-      try {
-        const timeout = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error("Port close timeout")), 3000)
-        );
-        await Promise.race([port.close(), timeout]);
-        console.log("Port closed successfully");
-      } catch (err) {
-        console.warn("Port close failed or timed out:", err);
-      } finally {
-        port = null;
-        btn.textContent = "Connect to Device";
-        btn.disabled = false;
+    // Enable/disable persistent terminal buttons (record, save log, clear, auto-scroll)
+    function updatePersistentButtons() {
+      const connected = !!port;
+      document.getElementById('recordBtn').disabled = !connected;
+      document.getElementById('saveTerminalLog').disabled = !connected;
+      document.getElementById('clear').disabled = !connected;
+      document.getElementById('autoScrollBtn').disabled = !connected;
+    }
 
+    // Enable/disable buttons depending on connection & mode (command vs monitor)
+    function updateConnectionDependentButtons() {
+      const isConnected = !!port;
+
+      document.querySelectorAll('.lockout').forEach(btn => {
+        if (btn.id === 'monitorBtn') {
+          // Monitor button: enabled only when connected and NOT in command mode
+          btn.disabled = !isConnected || isCommandMode;
+        } else {
+          // Most action buttons: enabled only in command mode
+          btn.disabled = !isConnected || !isCommandMode;
+        }
+      });
+
+      updateCaptureUIState();
+      updateFileActionButtons();
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // CONNECT / DISCONNECT LOGIC
+    // ──────────────────────────────────────────────────────────────
+
+    // Main connect/disconnect handler
+    async function handleConnectClick() {
+      // If already connected → disconnect
+      if (port) {
+        const btn = document.getElementById('connectBtn');
+        btn.textContent = "Disconnecting...";
+        btn.disabled = true;
+
+        // Stop monitoring if active
+        if (isMonitoring && monitorReader) {
+          isMonitoring = false;
+          try {
+            await monitorReader.cancel();
+            monitorReader.releaseLock();
+          } catch (e) {
+            console.warn("Error cancelling monitor reader:", e);
+          }
+          monitorReader = null;
+
+          document.getElementById('monitorBtn').textContent = 'Monitor';
+          document.getElementById('monitorBtn').classList.remove('monitor-on');
+          setLockout(false);
+          updateNmeaButtonState();
+        }
+
+        // Close port with timeout protection
+        const closeWithTimeout = async () => {
+          try {
+            const timeout = new Promise((_, reject) =>
+              setTimeout(() => reject(new Error("Port close timeout")), 3000)
+            );
+            await Promise.race([port.close(), timeout]);
+            console.log("Port closed successfully");
+          } catch (err) {
+            console.warn("Port close failed or timed out:", err);
+          } finally {
+            port = null;
+            isCommandMode = false;
+            updateConnectionDependentButtons();
+            updatePersistentButtons();
+            clearTerminal();
+            document.getElementById('fileList').innerHTML = 'Terminal...';
+            btn.textContent = "Connect to Device";
+            btn.disabled = false;
+
+            isScreenShown = false;
+            document.getElementById('canvas').style.display = 'none';
+            document.getElementById('captureBtn').classList.remove('monitor-on');
+            updateCaptureUIState();
+            window.location.reload();
+          }
+        };
+
+        closeWithTimeout();
+        return;
+      }
+
+      // Connect to a new serial port
+      try {
+        port = await navigator.serial.requestPort();
+        await port.open({ baudRate: 115200 });
+        clearTerminal();
+        appendToTerminal("Requesting link with tinyGTC\r\n");
+
+        // Small delay to let device settle
+        await new Promise(r => setTimeout(r, 500));
+
+        // Send "version" command to probe device state
+        const writer = port.writable.getWriter();
+        await writer.write(new TextEncoder().encode("version\r\n"));
+        writer.releaseLock();
+
+        // Try to detect if we got a command prompt
+        isCommandMode = await detectCommandMode();
+
+        if (isCommandMode) {
+          appendToTerminal("Command mode selected\r\n");
+
+          // Send empty line to get fresh prompt
+          const cmdWriter = port.writable.getWriter();
+          try {
+            await cmdWriter.write(new TextEncoder().encode("\r\n"));
+          } finally {
+            cmdWriter.releaseLock();
+          }
+
+          // Read response until prompt appears
+          const reader = port.readable.getReader();
+          const decoder = new TextDecoder();
+          let response = "";
+
+          try {
+            const start = Date.now();
+            while (Date.now() - start < 800) {
+              const { value, done } = await reader.read();
+              if (done) break;
+              const chunk = decoder.decode(value, { stream: true });
+              response += chunk;
+              appendToTerminal(chunk);
+
+              if (response.includes('>')) {
+                break;
+              }
+            }
+          } catch (e) {
+            console.warn("Echo read error:", e);
+          } finally {
+            try {
+              await reader.cancel().catch(() => {});
+              reader.releaseLock();
+            } catch (e) {
+              console.warn("Final reader cleanup failed:", e);
+            }
+          }
+        } else {
+          appendToTerminal("GPS or USB logging selected\r\n");
+        }
+
+        updateConnectionDependentButtons();
+        updatePersistentButtons();
+        document.getElementById('connectBtn').textContent = "Disconnect";
         isScreenShown = false;
         document.getElementById('canvas').style.display = 'none';
         document.getElementById('captureBtn').classList.remove('monitor-on');
         updateCaptureUIState();
+      } catch (err) {
+        console.error("Connection failed:", err);
+        if (err.name === 'DOMException' && err.message.includes('already open')) {
+          alert("Port is already in use by another application or tab.\nClose other programs using this port and try again.");
+        } else {
+          alert("Connection failed: " + err.message);
+        }
       }
-    };
+    }
 
-    closeWithTimeout();  // fire and forget — UI is already updated
+    // Try to detect command mode by looking for "tinyGTC" banner + prompt
+    async function detectCommandMode() {
+      if (!port) return false;
 
-    return;
-  }
+      const reader = port.readable.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let timeoutId;
 
-	  // Let user choose serial port
-	  try {
-		port = await navigator.serial.requestPort();
-		await port.open({ baudRate: 115200 });
-		document.getElementById('connectBtn').textContent = "Disconnect";
-		isScreenShown = false;
-		document.getElementById('canvas').style.display = 'none';
-		document.getElementById('captureBtn').classList.remove('monitor-on');
-		updateCaptureUIState();
-	  } catch (err) {
-		console.error("Connection failed:", err);
-		if (err.name === 'DOMException' && err.message.includes('already open')) {
-		  alert("Port is already in use by another application or tab.\nClose other programs using this port and try again.");
-		} else {
-		  alert("Connection failed: " + err.message);
-		}
-	  }
-	}
+      return new Promise((resolve) => {
+        const startTime = Date.now();
 
-    // ────────────────────────────────────────────────
-    //          Capture screen from device (RGB565)
-    // ────────────────────────────────────────────────
+        const readLoop = async () => {
+          try {
+            while (Date.now() - startTime < 500) {
+              const { value, done } = await reader.read();
+              if (done) break;
 
+              buffer += decoder.decode(value, { stream: true });
+
+              if (buffer.includes('\r\n> ')) {
+                const lines = buffer.split('\r\n');
+                for (let line of lines) {
+                  if (line.startsWith('tinyGTC') && buffer.includes(line + '\r\n> ')) {
+                    reader.releaseLock();
+                    clearTimeout(timeoutId);
+                    resolve(true);
+                    return;
+                  }
+                }
+              }
+            }
+
+            reader.releaseLock();
+            clearTimeout(timeoutId);
+            resolve(false);
+          } catch (err) {
+            console.error('Detection error:', err);
+            reader.releaseLock();
+            resolve(false);
+          }
+        };
+
+        timeoutId = setTimeout(() => {
+          reader.cancel().catch(() => {});
+          reader.releaseLock();
+          resolve(false);
+        }, 500);
+
+        readLoop();
+      });
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // SCREEN CAPTURE (480×320 RGB565 → PNG)
+    // ──────────────────────────────────────────────────────────────
+
+    // Toggle showing / capturing device screen
     async function toggleScreenCapture() {
-      if (!port) {
-        alert("Connect first!");
+      if (!port || !isCommandMode) {
+        alert("Connect to command port first!");
         return;
       }
 
@@ -542,6 +860,7 @@ async function handleConnectClick() {
       let writer = null;
 
       try {
+        // Send capture command
         writer = port.writable.getWriter();
         await writer.write(new TextEncoder().encode("\r"));
         await new Promise(r => setTimeout(r, 50));
@@ -564,24 +883,20 @@ async function handleConnectClick() {
         let buffer = new Uint8Array(0);
         let collecting = false;
 
-        // Pre-allocate full image buffer (faster than appending many times)
         const imgBuf = new Uint8Array(TOTAL_BYTES);
         let stored = 0;
 
+        // Read until we have all 307200 bytes after marker
         while (stored < TOTAL_BYTES) {
           const { value, done } = await reader.read();
-          if (done) {
-            console.warn("Stream ended before full image received");
-            break;
-          }
+          if (done) break;
 
-          // Append received chunk to buffer
           let temp = new Uint8Array(buffer.length + value.length);
           temp.set(buffer);
           temp.set(value, buffer.length);
           buffer = temp;
 
-          // Look for "capture\r\n" marker to start collecting image data
+          // Look for marker if not yet collecting
           if (!collecting) {
             for (let i = 0; i <= buffer.length - marker.length; i++) {
               if (marker.every((v, j) => buffer[i + j] === v)) {
@@ -601,7 +916,7 @@ async function handleConnectClick() {
           }
         }
 
-        // Convert RGB565 → RGBA (for canvas)
+        // Convert RGB565 → RGBA
         const rgba = new Uint8ClampedArray(WIDTH * HEIGHT * 4);
         for (let i = 0; i < WIDTH * HEIGHT; i++) {
           let p = (imgBuf[2 * i] << 8) | imgBuf[2 * i + 1];
@@ -610,13 +925,13 @@ async function handleConnectClick() {
           let g = (p >> 5)  & 0x3F;
           let b =  p        & 0x1F;
 
-          // Stretch 5/6-bit values to 8-bit
           rgba[i * 4]     = (r << 3) | (r >> 2);
           rgba[i * 4 + 1] = (g << 2) | (g >> 4);
           rgba[i * 4 + 2] = (b << 3) | (b >> 2);
-          rgba[i * 4 + 3] = 255; // full opacity
+          rgba[i * 4 + 3] = 255;
         }
 
+        // Draw image on canvas
         document.getElementById('canvas').getContext('2d')
           .putImageData(new ImageData(rgba, WIDTH, HEIGHT), 0, 0);
 
@@ -643,7 +958,7 @@ async function handleConnectClick() {
       }
     }
 
-    // Save displayed canvas image as PNG using File System Access API
+    // Save current canvas content as PNG using File System Access API
     async function savePNG() {
       const canvas = document.getElementById('canvas');
       if (!isScreenShown || canvas.style.display === 'none') {
@@ -668,39 +983,319 @@ async function handleConnectClick() {
       }
     }
 
-    // ────────────────────────────────────────────────
-    //          Record terminal output to local file
-    // ────────────────────────────────────────────────
+    // ──────────────────────────────────────────────────────────────
+    // MONITOR MODE – continuous reading of NMEA or frequency lines
+    // ──────────────────────────────────────────────────────────────
 
-    async function toggleFileRecord() {
-      if (isRecordingToFile) {
-        isRecordingToFile = false;
-        if (fileWritableStream) {
-          await fileWritableStream.close();
-          fileWritableStream = null;
+    // Start / stop continuous monitoring of serial data
+    async function toggleMonitor() {
+      if (!port || isCommandMode) return;
+
+      if (isMonitoring) {
+        // Stop monitoring
+        isMonitoring = false;
+        if (monitorReader) {
+          await monitorReader.cancel().catch(() => {});
         }
-        document.getElementById('recordBtn').textContent = "Record to File";
-        document.getElementById('recordBtn').classList.remove('monitor-on');
-      } else {
-        try {
-          const handle = await window.showSaveFilePicker({
-            suggestedName: 'tinyGTCrecord.txt',
-            types: [{ description: 'Text File', accept: { 'text/plain': ['.txt'] } }]
+        monitorReader = null;
+
+        document.getElementById('monitorBtn').textContent = 'Monitor';
+        document.getElementById('monitorBtn').classList.remove('monitor-on');
+        document.querySelectorAll('.lockout:not(#monitorBtn)').forEach(btn => btn.disabled = false);
+        updateConnectionDependentButtons();
+        updateNmeaButtonState();
+
+        // Reset frequency detection flags
+        hasSeenCHA = false;
+        hasSeenCHB = false;
+        hasSeenNMEA = false;
+        hasSeenFreq = false;
+        document.getElementById('chaBtn').classList.remove('monitor-on');
+        document.getElementById('chbBtn').classList.remove('monitor-on');
+        document.getElementById('chaBtn').disabled = true;
+        document.getElementById('chbBtn').disabled = true;
+        document.getElementById('chabBtn').classList.remove('monitor-on');
+        document.getElementById('chabBtn').disabled = true;
+        updateFreqDisplay('A', null);
+        updateFreqDisplay('B', null);
+        updateStatsButtons();
+
+        document.getElementById('freqContainer').style.display = 'none';
+
+        document.getElementById('nmeaBtn').disabled = true;
+
+        return;
+      }
+
+      // Start monitoring
+      isMonitoring = true;
+      clearTerminal();
+      document.getElementById('monitorBtn').textContent = 'Stop Monitor';
+      document.getElementById('monitorBtn').classList.add('monitor-on');
+      document.querySelectorAll('.lockout:not(#monitorBtn)').forEach(btn => btn.disabled = true);
+      updateStatsButtons();
+
+      // Reset detection flags
+      hasSeenCHA = false;
+      hasSeenCHB = false;
+      hasSeenNMEA = false;
+      hasSeenFreq = false;
+      document.getElementById('chaBtn').disabled = true;
+      document.getElementById('chbBtn').disabled = true;
+      document.getElementById('chabBtn').disabled = true;
+      updateFreqDisplay('A', null);
+      updateFreqDisplay('B', null);
+
+      document.getElementById('nmeaBtn').disabled = true;
+
+      const dec = new TextDecoder();
+      let lineBuf = '';
+      let isSynced = false;
+      let skippedFirstLine = false;
+      let lastPurge = Date.now();
+
+      monitorReader = port.readable.getReader();
+
+      try {
+        while (isMonitoring) {
+          const { value, done } = await monitorReader.read();
+          if (done || !isMonitoring) break;
+
+          const chunk = dec.decode(value, { stream: true });
+          lineBuf += chunk;
+
+          // Sync to first newline if needed
+          if (!isSynced) {
+            const firstNL = lineBuf.indexOf('\n');
+            if (firstNL !== -1) {
+              lineBuf = lineBuf.substring(firstNL + 1);
+              isSynced = true;
+            } else continue;
+          }
+
+          // Skip very first line after sync (sometimes garbage)
+          if (isSynced && !skippedFirstLine) {
+            const nextNL = lineBuf.indexOf('\n');
+            if (nextNL !== -1) {
+              lineBuf = lineBuf.substring(nextNL + 1);
+              skippedFirstLine = true;
+            } else continue;
+          }
+
+          let lines = lineBuf.split(/\r?\n/);
+          lineBuf = lines.pop();
+
+          lines.forEach(l => {
+            // Detect NMEA data
+            if (l.startsWith('$') && !hasSeenNMEA) {
+              hasSeenNMEA = true;
+              document.getElementById('nmeaBtn').disabled = false;
+            }
+
+            let cleanLine = l;
+
+            if (!cleanLine.trim()) return;
+
+            // Frequency line – Channel A
+            if (cleanLine.endsWith(' CHA')) {
+              hasSeenCHA = true;
+              const freq = cleanLine.slice(0, -4).replace(/\s+$/, '');
+              lastChaFreq = freq;
+
+              // Update running statistics if active
+              if (chaStatsActive) {
+                const newVal = parseFloat(freq);
+                if (!isNaN(newVal)) {
+                  chaRunningSum += newVal;
+                  chaAvgCounter += 1;
+                }
+              }
+
+              if (chaMinValue !== null) {
+                const newVal = parseFloat(freq);
+                if (!isNaN(newVal)) {
+                  chaMinValue = Math.min(chaMinValue, newVal);
+                }
+              }
+
+              if (chaMaxValue !== null) {
+                const newVal = parseFloat(freq);
+                if (!isNaN(newVal)) {
+                  chaMaxValue = Math.max(chaMaxValue, newVal);
+                }
+              }
+
+              const chaBtn = document.getElementById('chaBtn');
+              if (hasSeenCHA && chaBtn.disabled) {
+                chaBtn.disabled = false;
+              }
+
+              if (chaBtn.classList.contains('monitor-on')) {
+                updateFreqDisplay('A', freq);
+              }
+
+              // If we see frequency data, disable NMEA decode
+              const nmeaBtn = document.getElementById('nmeaBtn');
+              if (!nmeaBtn.disabled) {
+                nmeaBtn.disabled = true;
+                if (isNMEADecoding) {
+                  isNMEADecoding = false;
+                  nmeaBtn.classList.remove('monitor-on');
+                  document.getElementById('snrContainer').style.display = 'none';
+                  appendToTerminal("[INFO] Frequency mode detected – NMEA Decode disabled\r\n");
+                }
+              }
+
+              hasSeenNMEA = false;
+              document.getElementById('nmeaBtn').disabled = true;
+
+              if (hasSeenCHA || hasSeenCHB) {
+                hasSeenFreq = true;
+                document.getElementById('chabBtn').disabled = false;
+              }
+            }
+            // Frequency line – Channel B
+            else if (cleanLine.endsWith(' CHB')) {
+              hasSeenCHB = true;
+              const freq = cleanLine.slice(0, -4).replace(/\s+$/, '');
+              lastChbFreq = freq;
+
+              if (chbStatsActive) {
+                const newVal = parseFloat(freq);
+                if (!isNaN(newVal)) {
+                  chbRunningSum += newVal;
+                  chbAvgCounter += 1;
+                }
+              }
+
+              if (chbMinValue !== null) {
+                const newVal = parseFloat(freq);
+                if (!isNaN(newVal)) {
+                  chbMinValue = Math.min(chbMinValue, newVal);
+                }
+              }
+
+              if (chbMaxValue !== null) {
+                const newVal = parseFloat(freq);
+                if (!isNaN(newVal)) {
+                  chbMaxValue = Math.max(chbMaxValue, newVal);
+                }
+              }
+
+              const chbBtn = document.getElementById('chbBtn');
+              if (hasSeenCHB && chbBtn.disabled) {
+                chbBtn.disabled = false;
+              }
+
+              if (chbBtn.classList.contains('monitor-on')) {
+                updateFreqDisplay('B', freq);
+              }
+
+              const nmeaBtn = document.getElementById('nmeaBtn');
+              if (!nmeaBtn.disabled) {
+                nmeaBtn.disabled = true;
+                if (isNMEADecoding) {
+                  isNMEADecoding = false;
+                  nmeaBtn.classList.remove('monitor-on');
+                  document.getElementById('snrContainer').style.display = 'none';
+                  appendToTerminal("[INFO] Frequency mode detected – NMEA Decode disabled\r\n");
+                }
+              }
+
+              hasSeenNMEA = false;
+              document.getElementById('nmeaBtn').disabled = true;
+
+              if (hasSeenCHA || hasSeenCHB) {
+                hasSeenFreq = true;
+                document.getElementById('chabBtn').disabled = false;
+              }
+            }
+
+            // Format output – parse NMEA if enabled, otherwise show raw
+            let out = l + '\r\n';
+            if (isNMEADecoding) {
+              let cleanForNMEA = l.replace(/\r?\n?$/, '');
+              out = parseNMEA(cleanForNMEA) + '\r\n';
+            }
+            appendToTerminal(out);
           });
-          fileWritableStream = await handle.createWritable();
-          isRecordingToFile = true;
-          document.getElementById('recordBtn').textContent = "Stop Recording";
-          document.getElementById('recordBtn').classList.add('monitor-on');
-        } catch (err) {
-          console.log("Recording setup cancelled");
+
+          // Clean up old satellite data every minute
+          const now = Date.now();
+          if (now - lastPurge > 60000) {
+            for (let key in satData) {
+              if (now - satData[key].lastSeen > 600000) {
+                delete satData[key];
+              }
+            }
+            activeSats.clear();
+            drawSNR();
+            lastPurge = now;
+          }
         }
+      } catch (e) {
+        console.error("Monitor Stream Error:", e);
+      } finally {
+        if (monitorReader) {
+          monitorReader.releaseLock();
+          monitorReader = null;
+        }
+        isMonitoring = false;
+        document.getElementById('monitorBtn').textContent = 'Monitor';
+        document.getElementById('monitorBtn').classList.remove('monitor-on');
+        document.querySelectorAll('.lockout:not(#monitorBtn)').forEach(btn => btn.disabled = false);
+        updateConnectionDependentButtons();
+        updateNmeaButtonState();
+
+        // Reset all frequency-related state
+        hasSeenCHA = false;
+        hasSeenCHB = false;
+        hasSeenNMEA = false;
+        hasSeenFreq = false;
+
+        const chaBtn = document.getElementById('chaBtn');
+        const chbBtn = document.getElementById('chbBtn');
+        chaBtn.classList.remove('monitor-on');
+        chbBtn.classList.remove('monitor-on');
+        chaBtn.disabled = true;
+        chbBtn.disabled = true;
+
+        document.getElementById('chabBtn').classList.remove('monitor-on');
+
+        ['chaAvgBtn','chaMinBtn','chaMaxBtn','chbAvgBtn','chbMinBtn','chbMaxBtn']
+          .forEach(id => {
+            const btn = document.getElementById(id);
+            btn.classList.remove('monitor-on');
+            btn.disabled = true;
+          });
+
+        chaStatsActive = false;
+        chbStatsActive = false;
+        chaRunningSum = 0;
+        chaAvgCounter = 0;
+        chaMinValue = null;
+        chaMaxValue = null;
+        chbRunningSum = 0;
+        chbAvgCounter = 0;
+        chbMinValue = null;
+        chbMaxValue = null;
+
+        updateFreqDisplay('A', null);
+        updateFreqDisplay('B', null);
+
+        updateStatsButtons();
+
+        document.getElementById('freqContainer').style.display = 'none';
+
+        document.getElementById('nmeaBtn').disabled = true;
       }
     }
 
-    // ────────────────────────────────────────────────
-    //          Parse common NMEA sentences & update UI
-    // ────────────────────────────────────────────────
+    // ──────────────────────────────────────────────────────────────
+    // NMEA PARSING & VISUALIZATION
+    // ──────────────────────────────────────────────────────────────
 
+    // Parse one NMEA sentence and return a human-readable version
     function parseNMEA(line) {
       if (!line.startsWith('$')) return line;
       const parts = line.split(',');
@@ -795,10 +1390,7 @@ async function handleConnectClick() {
       return line;
     }
 
-    // ────────────────────────────────────────────────
-    //          Draw SNR bar chart
-    // ────────────────────────────────────────────────
-
+    // Draw bar chart of satellite signal strengths
     function drawSNR() {
       const canvas = document.getElementById('snrCanvas');
       const ctx = canvas.getContext('2d');
@@ -852,10 +1444,7 @@ async function handleConnectClick() {
       });
     }
 
-    // ────────────────────────────────────────────────
-    //          Draw satellite sky plot (polar view)
-    // ────────────────────────────────────────────────
-
+    // Draw polar sky plot showing satellite positions
     function drawSkyPlot() {
       const canvas = document.getElementById('skyCanvas');
       if (!canvas) return;
@@ -866,7 +1455,7 @@ async function handleConnectClick() {
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Draw elevation rings (90°, 60°, 30°)
+      // Draw elevation rings
       ctx.strokeStyle = '#ccc';
       ctx.lineWidth = 1;
       [1, 0.66, 0.33].forEach(m => {
@@ -875,12 +1464,13 @@ async function handleConnectClick() {
         ctx.stroke();
       });
 
-      // Draw cross (N-S, E-W)
+      // Draw cross
       ctx.beginPath();
       ctx.moveTo(centerX - radius, centerY); ctx.lineTo(centerX + radius, centerY);
       ctx.moveTo(centerX, centerY - radius); ctx.lineTo(centerX, centerY + radius);
       ctx.stroke();
 
+      // North label
       ctx.fillStyle = '#666';
       ctx.font = 'bold 14px Arial';
       ctx.textAlign = 'center';
@@ -923,6 +1513,7 @@ async function handleConnectClick() {
       ctx.fillText('90°',  centerX                + labelOffset, centerY);
     }
 
+    // Change sky plot filter and redraw
     function setSkyFilter(mode) {
       skyFilter = mode;
       document.getElementById('filterAll').classList.toggle('active', mode === 'all');
@@ -932,123 +1523,226 @@ async function handleConnectClick() {
       drawSkyPlot();
     }
 
-    // ────────────────────────────────────────────────
-    //          Continuous NMEA monitoring mode
-    // ────────────────────────────────────────────────
-
-    async function toggleMonitor() {
-      if (!port) return;
-
-      if (isMonitoring) {
-        // STOP monitoring
-        isMonitoring = false;
-        if (monitorReader) {
-          await monitorReader.cancel().catch(() => {});
-        }
-        return;
+    // Toggle NMEA decoding on/off (only available in monitor mode)
+    function toggleNMEADecode() {
+      if (!isNMEADecoding && !isMonitoring) {
+        return alert("Start Monitor first to turn on NMEA Decode!");
       }
-
-      // START monitoring
-      isMonitoring = true;
-      document.getElementById('monitorBtn').textContent = 'Stop Monitor';
-      document.getElementById('monitorBtn').classList.add('monitor-on');
-      setLockout(true);
-      updateNmeaButtonState();  // Enable NMEA button if appropriate
-
-      const dec = new TextDecoder();
-      let lineBuf = '';
-      let isSynced = false;
-      let skippedFirstLine = false;
-      let lastPurge = Date.now();
-
-      monitorReader = port.readable.getReader();
-
-      try {
-        while (isMonitoring) {
-          const { value, done } = await monitorReader.read();
-          if (done || !isMonitoring) break;
-
-          const chunk = dec.decode(value, { stream: true });
-          lineBuf += chunk;
-
-          // Try to find first newline to sync stream
-          if (!isSynced) {
-            const firstNL = lineBuf.indexOf('\n');
-            if (firstNL !== -1) {
-              lineBuf = lineBuf.substring(firstNL + 1);
-              isSynced = true;
-            } else continue;
-          }
-
-          // Skip first partial line after sync (common garbage)
-          if (isSynced && !skippedFirstLine) {
-            const nextNL = lineBuf.indexOf('\n');
-            if (nextNL !== -1) {
-              lineBuf = lineBuf.substring(nextNL + 1);
-              skippedFirstLine = true;
-            } else continue;
-          }
-
-          let lines = lineBuf.split(/\r?\n/);
-          lineBuf = lines.pop();
-
-          lines.forEach(l => {
-            let out = l + '\r\n';
-            if (out.trim()) {
-              if (isNMEADecoding) {
-                let cleanLine = l.replace(/\r?\n?$/, '');
-                out = parseNMEA(cleanLine) + '\r\n';
-              }
-              appendToTerminal(out);
-            }
-          });
-
-          // Clean up old satellite data (~every minute)
-          const now = Date.now();
-          if (now - lastPurge > 60000) {
-            for (let key in satData) {
-              if (now - satData[key].lastSeen > 600000) {
-                delete satData[key];
-              }
-            }
-            activeSats.clear();
-            drawSNR();
-            lastPurge = now;
-          }
-        }
-      } catch (e) {
-        console.error("Monitor Stream Error:", e);
-      } finally {
-        if (monitorReader) {
-          monitorReader.releaseLock();
-          monitorReader = null;
-        }
-        isMonitoring = false;
-        setLockout(false);
-        document.getElementById('monitorBtn').textContent = 'Monitor';
-        document.getElementById('monitorBtn').classList.remove('monitor-on');
-		updateNmeaButtonState();  // Dim NMEA button if appropriate (only if NMEA also off)
-      }
-	  
+      isNMEADecoding = !isNMEADecoding;
+      document.getElementById('nmeaBtn').classList.toggle('monitor-on', isNMEADecoding);
+      document.getElementById('snrContainer').style.display = isNMEADecoding ? 'block' : 'none';
+      updateNmeaButtonState();
     }
 
-    // Toggle detailed NMEA parsing + sky/SNR plots
-    async function toggleNMEADecode() {
-  if (!isNMEADecoding && !isMonitoring) {
-    return alert("Start Monitor first to turn on NMEA Decode!");
-  }
-  isNMEADecoding = !isNMEADecoding;
-  document.getElementById('nmeaBtn').classList.toggle('monitor-on', isNMEADecoding);
-  document.getElementById('snrContainer').style.display = isNMEADecoding ? 'block' : 'none';
-  updateNmeaButtonState();  // Update dimmed state after toggle
-}
+    // ──────────────────────────────────────────────────────────────
+    // FREQUENCY DISPLAY & STATISTICS
+    // ──────────────────────────────────────────────────────────────
 
-    // ────────────────────────────────────────────────
-    //          SD card file operations
-    // ────────────────────────────────────────────────
+    // Show/hide frequency panel
+    function toggleFreqPanel() {
+      const btn = document.getElementById('chabBtn');
+      const container = document.getElementById('freqContainer');
+      
+      const isVisible = container.style.display !== 'none';
+      
+      if (isVisible) {
+        container.style.display = 'none';
+        btn.classList.remove('monitor-on');
 
+        updateFreqDisplay('A', null);
+        updateFreqDisplay('B', null);
+
+        chaStatsActive = false;
+        chbStatsActive = false;
+        chaRunningSum = 0;
+        chaAvgCounter = 0;
+        chaMinValue = null;
+        chaMaxValue = null;
+        chbRunningSum = 0;
+        chbAvgCounter = 0;
+        chbMinValue = null;
+        chbMaxValue = null;
+      } else {
+        container.style.display = 'block';
+        btn.classList.add('monitor-on');
+      }
+    }
+
+    // Cycle through number of decimal places (3→6→9→12→integer→cycle)
+    function cycleDigits() {
+      const cycle = [3,6,9,12,0];
+      const currentIndex = cycle.indexOf(freqDigits);
+      const nextIndex = (currentIndex + 1) % cycle.length;
+      freqDigits = cycle[nextIndex];
+      updateFreqDisplay('A', lastChaFreq);
+      updateFreqDisplay('B', lastChbFreq);
+    }
+
+    // Update one frequency display (A or B)
+    function updateFreqDisplay(channel, value) {
+      const disp = document.getElementById(channel === 'A' ? 'freqA' : 'freqB');
+      if (!disp) return;
+
+      if (channel === 'A') {
+        lastChaFreq = value;
+        if (chaStatsActive && chaAvgCounter > 0) {
+          const avg = (chaRunningSum / chaAvgCounter);
+          disp.textContent = freqDigits === 0 ? Math.floor(avg).toString() : avg.toFixed(freqDigits);
+          disp.classList.remove('inactive');
+          return;
+        }
+        if (chaMinValue !== null) {
+          disp.textContent = freqDigits === 0 ? Math.floor(chaMinValue).toString() : chaMinValue.toFixed(freqDigits);
+          disp.classList.remove('inactive');
+          return;
+        }
+        if (chaMaxValue !== null) {
+          disp.textContent = freqDigits === 0 ? Math.floor(chaMaxValue).toString() : chaMaxValue.toFixed(freqDigits);
+          disp.classList.remove('inactive');
+          return;
+        }
+      } else if (channel === 'B') {
+        lastChbFreq = value;
+        if (chbStatsActive && chbAvgCounter > 0) {
+          const avg = (chbRunningSum / chbAvgCounter);
+          disp.textContent = freqDigits === 0 ? Math.floor(avg).toString() : avg.toFixed(freqDigits);
+          disp.classList.remove('inactive');
+          return;
+        }
+        if (chbMinValue !== null) {
+          disp.textContent = freqDigits === 0 ? Math.floor(chbMinValue).toString() : chbMinValue.toFixed(freqDigits);
+          disp.classList.remove('inactive');
+          return;
+        }
+        if (chbMaxValue !== null) {
+          disp.textContent = freqDigits === 0 ? Math.floor(chbMaxValue).toString() : chbMaxValue.toFixed(freqDigits);
+          disp.classList.remove('inactive');
+          return;
+        }
+      }
+
+      if (value && typeof value === 'string') {
+        const num = parseFloat(value);
+        if (!isNaN(num)) {
+          const formatted = freqDigits === 0 ? Math.floor(num).toString() : num.toFixed(freqDigits);
+          const displayValue = (value.startsWith(' ') ? ' ' : '') + formatted;
+          disp.textContent = displayValue;
+          disp.classList.remove('inactive');
+        } else {
+          disp.innerHTML = "-------------  ";
+          disp.classList.add('inactive');
+        }
+      } else {
+        disp.innerHTML = "-------------  ";
+        disp.classList.add('inactive');
+      }
+    }
+
+    // Enable/disable stat buttons depending on whether channel is selected
+    function updateStatsButtons() {
+      const chaActive = document.getElementById('chaBtn').classList.contains('monitor-on');
+      const chbActive = document.getElementById('chbBtn').classList.contains('monitor-on');
+      
+      document.getElementById('chaAvgBtn').disabled  = !chaActive;
+      document.getElementById('chaMinBtn').disabled  = !chaActive;
+      document.getElementById('chaMaxBtn').disabled  = !chaActive;
+      
+      document.getElementById('chbAvgBtn').disabled  = !chbActive;
+      document.getElementById('chbMinBtn').disabled  = !chbActive;
+      document.getElementById('chbMaxBtn').disabled  = !chbActive;
+
+      document.getElementById('digitsBtn').disabled = !chaActive && !chbActive;
+    }
+
+    // Toggle average / min / max display for a channel
+    function toggleStat(id) {
+      const channel = id.startsWith('CHA') ? 'A' : 'B';
+      const prefix = channel === 'A' ? 'cha' : 'chb';
+
+      const avgBtn = document.getElementById(prefix + 'AvgBtn');
+      const minBtn = document.getElementById(prefix + 'MinBtn');
+      const maxBtn = document.getElementById(prefix + 'MaxBtn');
+
+      const clickedBtn = id.endsWith('AVG') ? avgBtn :
+                         id.endsWith('MIN') ? minBtn : maxBtn;
+
+      const becomingActive = clickedBtn.classList.toggle('monitor-on');
+
+      if (becomingActive) {
+        // Turn off other stats for same channel
+        [avgBtn, minBtn, maxBtn].forEach(btn => {
+          if (btn !== clickedBtn) {
+            btn.classList.remove('monitor-on');
+          }
+        });
+
+        if (channel === 'A') {
+          if (clickedBtn !== avgBtn) { chaStatsActive = false; chaRunningSum = 0; chaAvgCounter = 0; }
+          if (clickedBtn !== minBtn) { chaMinValue = null; }
+          if (clickedBtn !== maxBtn) { chaMaxValue = null; }
+        } else {
+          if (clickedBtn !== avgBtn) { chbStatsActive = false; chbRunningSum = 0; chbAvgCounter = 0; }
+          if (clickedBtn !== minBtn) { chbMinValue = null; }
+          if (clickedBtn !== maxBtn) { chbMaxValue = null; }
+        }
+
+        const currentVal = channel === 'A' ? lastChaFreq : lastChbFreq;
+        if (currentVal && !isNaN(parseFloat(currentVal))) {
+          const val = parseFloat(currentVal);
+          if (id.endsWith('AVG')) {
+            if (channel === 'A') { chaRunningSum = val; chaAvgCounter = 1; chaStatsActive = true; }
+            else { chbRunningSum = val; chbAvgCounter = 1; chbStatsActive = true; }
+          } else if (id.endsWith('MIN')) {
+            if (channel === 'A') chaMinValue = val;
+            else chbMinValue = val;
+          } else if (id.endsWith('MAX')) {
+            if (channel === 'A') chaMaxValue = val;
+            else chbMaxValue = val;
+          }
+        }
+      } else {
+        if (id.endsWith('AVG')) {
+          if (channel === 'A') { chaStatsActive = false; chaRunningSum = 0; chaAvgCounter = 0; }
+          else { chbStatsActive = false; chbRunningSum = 0; chbAvgCounter = 0; }
+        } else if (id.endsWith('MIN')) {
+          if (channel === 'A') chaMinValue = null;
+          else chbMinValue = null;
+        } else if (id.endsWith('MAX')) {
+          if (channel === 'A') chaMaxValue = null;
+          else chbMaxValue = null;
+        }
+      }
+
+      updateFreqDisplay(channel, channel === 'A' ? lastChaFreq : lastChbFreq);
+    }
+
+    // Toggle channel selection (shows its frequency)
+    function toggleChannel(ch) {
+      if (!isMonitoring) return;
+
+      const btn = document.getElementById(ch === 'A' ? 'chaBtn' : 'chbBtn');
+
+      if (btn.disabled) return;
+
+      const isActive = btn.classList.contains('monitor-on');
+
+      if (isActive) {
+        btn.classList.remove('monitor-on');
+        btn.disabled = true;
+      } else {
+        btn.classList.add('monitor-on');
+      }
+
+      updateStatsButtons();
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // SD CARD OPERATIONS (list, download, delete)
+    // ──────────────────────────────────────────────────────────────
+
+    // List files on SD card
     async function listSD() {
-      if (!port) return alert("Connect first!");
+      if (!port || !isCommandMode) return alert("Connect to command port first!");
       clearTerminal();
       const writer = port.writable.getWriter();
       const reader = port.readable.getReader();
@@ -1075,9 +1769,9 @@ async function handleConnectClick() {
             div.className = "file-item";
             div.textContent = cleanLine;
             div.onclick = () => {
-            document.getElementById('fileName').value = cleanLine.split(' ')[0];
-            updateFileActionButtons();  // Add this line to enable/disable buttons based on selection
-};
+              document.getElementById('fileName').value = cleanLine.split(' ')[0];
+              updateFileActionButtons();
+            };
             listEl.appendChild(div);
           }
         });
@@ -1085,144 +1779,134 @@ async function handleConnectClick() {
         reader.releaseLock();
       }
     }
-	
-	async function deleteSD() {
-  const file = document.getElementById('fileName').value.trim();
-  if (!port || !file) {
-    alert("Check connection and filename.");
-    return;
-  }
 
-  if (!confirm(`Are you sure you want to delete ${file}?`)) {
-    return;
-  }
-
-  const listEl = document.getElementById('fileList');
-  listEl.innerHTML = "Processing delete...";
-
-  let success = false;
-  let rawResult = "";
-  const decoder = new TextDecoder();
-
-  const writer = port.writable.getWriter();
-  const reader = port.readable.getReader();
-
-  try {
-    // Send delete command
-    await writer.write(new TextEncoder().encode(`sd_delete ${file}\r`));
-
-    // Read response looking for OK
-    const timeoutMs = 5000;
-    const startTime = Date.now();
-
-    while (Date.now() - startTime < timeoutMs) {
-      const { value, done } = await reader.read();
-      if (done) break;
-
-      rawResult += decoder.decode(value, { stream: true });
-
-      if (rawResult.includes("OK")) {
-        success = true;
-        break;
+    // Delete selected file from SD card
+    async function deleteSD() {
+      if (!isCommandMode) return alert("Connect to command port first!");
+      const file = document.getElementById('fileName').value.trim();
+      if (!port || !file) {
+        alert("Check connection and filename.");
+        return;
       }
-    }
 
-    // Display the response so far
-    listEl.innerHTML = "";
-
-    rawResult.split(/\r?\n/).forEach(line => {
-      const cleanLine = line.trim();
-      if (cleanLine !== "" && cleanLine !== ">") {
-        const div = document.createElement('div');
-        div.className = "file-item";
-        div.textContent = cleanLine;
-        div.onclick = () => {
-          document.getElementById('fileName').value = cleanLine.split(' ')[0];
-          updateFileActionButtons();
-        };
-        listEl.appendChild(div);
+      if (!confirm(`Are you sure you want to delete ${file}?`)) {
+        return;
       }
-    });
 
-    // Wait for final prompt `> ` to consume the entire response
-    let tailBuf = "";
-    try {
-      const promptTimeout = 500;
-      const startTime = Date.now();
+      const listEl = document.getElementById('fileList');
+      listEl.innerHTML = "Processing delete...";
 
-      while (Date.now() - startTime < promptTimeout) {
-        const { value, done } = await Promise.race([
-          reader.read(),
-          new Promise(r => setTimeout(() => r({ timeout: true }), 500))
-        ]);
+      let success = false;
+      let rawResult = "";
+      const decoder = new TextDecoder();
 
-        if (done || value?.timeout) break;
-
-        tailBuf += decoder.decode(value, { stream: true });
-
-        // Look for `> ` after at least one line ending
-        if (tailBuf.includes("\r\n> ") || tailBuf.includes("\n> ") || tailBuf.trim().endsWith("> ")) {
-          // Optional: if you want to show any extra lines from tailBuf, process them here
-          // For now, we just consume them so prompt is advanced
-          break;
-        }
-      }
-    } catch (e) {
-      console.log("Prompt detection after deleteSD failed:", e);
-      // Continue anyway; device is probably still ready
-    }
-
-  } catch (err) {
-    console.error("Delete operation failed:", err);
-    const errDiv = document.createElement('div');
-    errDiv.textContent = "→ Error: " + err.message;
-    listEl.appendChild(errDiv);
-  } finally {
-    // Release locks BEFORE any success handling or refresh
-    try { writer.releaseLock(); } catch {}
-    try {
-      await reader.cancel().catch(() => {});
-      reader.releaseLock();
-    } catch {}
-  }
-
-  // ────────────────────────────────────────────────
-  //   Success handling and auto-refresh — AFTER locks released
-  // ────────────────────────────────────────────────
-
-  if (success) {
-    const readyDiv = document.createElement('div');
-    readyDiv.textContent = "File was deleted";
-    listEl.appendChild(readyDiv);
-    listEl.scrollTop = listEl.scrollHeight;
-
-    // Auto-refresh file list after 1.8 seconds — exactly like readSD
-    setTimeout(async () => {
-      const refreshDiv = document.createElement('div');
-      refreshDiv.textContent = "Auto-refreshing file list...";
-      listEl.appendChild(refreshDiv);
-      listEl.scrollTop = listEl.scrollHeight;
+      const writer = port.writable.getWriter();
+      const reader = port.readable.getReader();
 
       try {
-        await listSD();
+        await writer.write(new TextEncoder().encode(`sd_delete ${file}\r`));
+
+        const timeoutMs = 5000;
+        const startTime = Date.now();
+
+        while (Date.now() - startTime < timeoutMs) {
+          const { value, done } = await reader.read();
+          if (done) break;
+
+          rawResult += decoder.decode(value, { stream: true });
+
+          if (rawResult.includes("OK")) {
+            success = true;
+            break;
+          }
+        }
+
+        listEl.innerHTML = "";
+
+        rawResult.split(/\r?\n/).forEach(line => {
+          const cleanLine = line.trim();
+          if (cleanLine !== "" && cleanLine !== ">") {
+            const div = document.createElement('div');
+            div.className = "file-item";
+            div.textContent = cleanLine;
+            div.onclick = () => {
+              document.getElementById('fileName').value = cleanLine.split(' ')[0];
+              updateFileActionButtons();
+            };
+            listEl.appendChild(div);
+          }
+        });
+
+        // Wait briefly for final prompt
+        let tailBuf = "";
+        try {
+          const promptTimeout = 500;
+          const startTime = Date.now();
+
+          while (Date.now() - startTime < promptTimeout) {
+            const { value, done } = await Promise.race([
+              reader.read(),
+              new Promise(r => setTimeout(() => r({ timeout: true }), 500))
+            ]);
+
+            if (done || value?.timeout) break;
+
+            tailBuf += decoder.decode(value, { stream: true });
+
+            if (tailBuf.includes("\r\n> ") || tailBuf.includes("\n> ") || tailBuf.trim().endsWith("> ")) {
+              break;
+            }
+          }
+        } catch (e) {
+          console.log("Prompt detection after deleteSD failed:", e);
+        }
+
       } catch (err) {
+        console.error("Delete operation failed:", err);
         const errDiv = document.createElement('div');
-        errDiv.textContent = "→ Auto-refresh failed: " + err.message;
+        errDiv.textContent = "→ Error: " + err.message;
         listEl.appendChild(errDiv);
+      } finally {
+        try { writer.releaseLock(); } catch {}
+        try {
+          await reader.cancel().catch(() => {});
+          reader.releaseLock();
+        } catch {}
+      }
+
+      if (success) {
+        const readyDiv = document.createElement('div');
+        readyDiv.textContent = "File was deleted";
+        listEl.appendChild(readyDiv);
+        listEl.scrollTop = listEl.scrollHeight;
+
+        setTimeout(async () => {
+          const refreshDiv = document.createElement('div');
+          refreshDiv.textContent = "Auto-refreshing file list...";
+          listEl.appendChild(refreshDiv);
+          listEl.scrollTop = listEl.scrollHeight;
+
+          try {
+            await listSD();
+          } catch (err) {
+            const errDiv = document.createElement('div');
+            errDiv.textContent = "→ Auto-refresh failed: " + err.message;
+            listEl.appendChild(errDiv);
+            listEl.scrollTop = listEl.scrollHeight;
+          }
+        }, 1800);
+
+      } else {
+        const noPromptDiv = document.createElement('div');
+        noPromptDiv.textContent = "No final prompt detected – device may still be ready";
+        listEl.appendChild(noPromptDiv);
         listEl.scrollTop = listEl.scrollHeight;
       }
-    }, 1800);
+    }
 
-  } else {
-    const noPromptDiv = document.createElement('div');
-    noPromptDiv.textContent = "No final prompt detected – device may still be ready";
-    listEl.appendChild(noPromptDiv);
-    listEl.scrollTop = listEl.scrollHeight;
-  }
-}
-
-
+    // Download selected file from SD card
     async function readSD() {
+      if (!isCommandMode) return alert("Connect to command port first!");
       const file = document.getElementById('fileName').value.trim();
       if (!port || !file) {
         alert("Check connection and filename.");
@@ -1256,7 +1940,7 @@ async function handleConnectClick() {
       let success = false;
 
       try {
-        // Step 1: Sync – send \n and wait for prompt
+        // Try to sync with device
         let synced = false;
         for (let retry = 0; retry < 4 && !synced; retry++) {
           await writer.write(new Uint8Array([0x0A]));
@@ -1285,11 +1969,10 @@ async function handleConnectClick() {
 
         append("File transfer requested");
 
-        // Step 2: Send read command
         const cmd = `sd_read ${file}\r\n`;
         await writer.write(new TextEncoder().encode(cmd));
 
-        // Step 3: Wait for echo of command
+        // Wait for echo of command
         let echoBuf = "";
         let echoOk = false;
         const echoStart = Date.now();
@@ -1305,7 +1988,7 @@ async function handleConnectClick() {
 
         append(echoOk ? "File transfer acknowledged" : "Warning: echo not clearly detected – continuing");
 
-        // Step 4: Read file size line
+        // Read file size (sent as plain number on its own line)
         let sizeBuf = "";
         let fileSize = 0;
         let sizeOk = false;
@@ -1345,7 +2028,6 @@ async function handleConnectClick() {
 
         append(`File transfer size = ${fileSize}`);
 
-        // Step 5: Receive binary data + show progress
         const wrap = document.getElementById('downloadProgressWrap');
         const bar = document.getElementById('downloadBar');
         wrap.style.display = 'block';
@@ -1356,6 +2038,7 @@ async function handleConnectClick() {
         let binaryData = new Uint8Array(0);
         let totalReceived = 0;
 
+        // Read binary data until we have the full file
         while (totalReceived < fileSize) {
           const { value, done } = await reader.read();
           if (done) {
@@ -1386,7 +2069,6 @@ async function handleConnectClick() {
 
         setTimeout(() => wrap.style.display = 'none', 800);
 
-        // Step 6: Wait for final prompt (best effort)
         append("Waiting for device ready prompt...");
 
         let promptDetected = false;
@@ -1417,7 +2099,6 @@ async function handleConnectClick() {
         if (promptDetected || success) {
           append("Ready for next transfer");
 
-          // Auto-refresh file list after 1.8 seconds
           setTimeout(async () => {
             append("Auto-refreshing file list...");
             try {
@@ -1425,7 +2106,7 @@ async function handleConnectClick() {
             } catch (err) {
               append("→ Auto-refresh failed: " + err.message);
             }
-          }, 1800);   // 1.8 second delay until file list refresh
+          }, 1800);
         } else {
           append("No final prompt detected – device may still be ready");
         }
@@ -1445,8 +2126,13 @@ async function handleConnectClick() {
       }
     }
 
-    // Send single command and show response
+    // ──────────────────────────────────────────────────────────────
+    // COMMAND SENDING & TERMINAL LOGGING
+    // ──────────────────────────────────────────────────────────────
+
+    // Send a single command (only in command mode)
     async function sendCommand() {
+      if (!isCommandMode) return alert("Connect to command port first!");
       const input = document.getElementById('cmdInput');
       if (!port || isMonitoring) return;
 
@@ -1476,6 +2162,32 @@ async function handleConnectClick() {
       }
     }
 
+    // Toggle recording terminal output to a local text file
+    async function toggleFileRecord() {
+      if (isRecordingToFile) {
+        isRecordingToFile = false;
+        if (fileWritableStream) {
+          await fileWritableStream.close();
+          fileWritableStream = null;
+        }
+        document.getElementById('recordBtn').textContent = "Record to File";
+        document.getElementById('recordBtn').classList.remove('monitor-on');
+      } else {
+        try {
+          const handle = await window.showSaveFilePicker({
+            suggestedName: 'tinyGTCrecord.txt',
+            types: [{ description: 'Text File', accept: { 'text/plain': ['.txt'] } }]
+          });
+          fileWritableStream = await handle.createWritable();
+          isRecordingToFile = true;
+          document.getElementById('recordBtn').textContent = "Stop Recording";
+          document.getElementById('recordBtn').classList.add('monitor-on');
+        } catch (err) {
+          console.log("Recording setup cancelled");
+        }
+      }
+    }
+
     // Save current terminal content as text file
     async function saveTerminalLog() {
       try {
@@ -1501,30 +2213,42 @@ async function handleConnectClick() {
       }
     }
 
-   function clearTerminal() {
-    document.getElementById('fileList').innerHTML = "";
-    document.getElementById('fileName').value = "";     // ← add this line
-    updateFileActionButtons();                          // ← add this line (if you already have the function)
-}
+    // Clear terminal and reset file selection
+    function clearTerminal() {
+      document.getElementById('fileList').innerHTML = "";
+      document.getElementById('fileName').value = "";
+      updateFileActionButtons();
+    }
 
-    // ────────────────────────────────────────────────
-    //          Event listeners & init
-    // ────────────────────────────────────────────────
+    // ──────────────────────────────────────────────────────────────
+    // EVENT LISTENERS & INITIAL SETUP
+    // ──────────────────────────────────────────────────────────────
 
     document.addEventListener('DOMContentLoaded', () => {
+      // Sky plot filter buttons
       document.getElementById('filterAll').onclick   = () => setSkyFilter('all');
       document.getElementById('filterSNR').onclick   = () => setSkyFilter('snr');
       document.getElementById('filterSNR25').onclick = () => setSkyFilter('snr25');
       document.getElementById('filterNoSNR').onclick = () => setSkyFilter('nosnr');
 
-      updateCaptureUIState(); // initial button states
-
-      // Initialize file action buttons and watch fileName input
+      // Initial UI state
+      updateCaptureUIState();
       updateFileActionButtons();
       updateNmeaButtonState();
+      updateStatsButtons();
+      updateConnectionDependentButtons();
+
       const fileNameInput = document.getElementById('fileName');
       fileNameInput.addEventListener('input', updateFileActionButtons);
       fileNameInput.addEventListener('change', updateFileActionButtons);
+
+      // Start with auto-scroll button disabled (until connected)
+      const autoScrollBtn = document.getElementById('autoScrollBtn');
+      if (autoScrollBtn) {
+        autoScrollBtn.disabled = true;
+        autoScrollBtn.classList.remove('monitor-on');
+        autoScrollBtn.textContent = "Auto-scroll";
+      }
     });
   </script>
 </body>
