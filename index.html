@@ -1,5 +1,5 @@
 <!--
-tinyGTC Toolkit version 2.0
+tinyGTC Toolkit version 2.1
 Copyright (c) 2025 Roger Need
 
 This program is free software: you can redistribute it and/or modify
@@ -22,7 +22,7 @@ Refer to the GNU General Public License for licensing details.
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>tinyGTC Toolkit V2.0</title>
+  <title>tinyGTC Toolkit V2.1</title>
 
   <style>
     /* ──────────────────────────────────────────────────────────────
@@ -345,7 +345,7 @@ Refer to the GNU General Public License for licensing details.
       Use Chrome, Chromium, or Edge instead.
     </div>
 
-    <h1>tinyGTC Toolkit V2.0</h1>
+    <h1>tinyGTC Toolkit V2.1</h1>
 
     <!-- Connect / Disconnect button -->
     <div class="row">
@@ -1099,7 +1099,9 @@ Refer to the GNU General Public License for licensing details.
             // Frequency line – Channel A
             if (cleanLine.endsWith(' CHA')) {
               hasSeenCHA = true;
-              const freq = cleanLine.slice(0, -4).replace(/\s+$/, '');
+              const match = cleanLine.trim().match(/([+-]?\d*\.?\d+)\s+(CHA|CHB)$/);
+              const freq = match ? match[1] : null;
+              if (!freq) return;               // skip bad lines
               lastChaFreq = freq;
 
               // Update running statistics if active
@@ -1157,8 +1159,10 @@ Refer to the GNU General Public License for licensing details.
             // Frequency line – Channel B
             else if (cleanLine.endsWith(' CHB')) {
               hasSeenCHB = true;
-              const freq = cleanLine.slice(0, -4).replace(/\s+$/, '');
-              lastChbFreq = freq;
+                  const match = cleanLine.trim().match(/([+-]?\d*\.?\d+)\s+(CHA|CHB)$/);
+                  const freq = match ? match[1] : null;
+                  if (!freq) return;
+                  lastChbFreq = freq;
 
               if (chbStatsActive) {
                 const newVal = parseFloat(freq);
